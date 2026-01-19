@@ -1,0 +1,52 @@
+RAG (Retrieval-Augmented Generation) Architecture Guide
+
+1. Introduction to RAG
+RAG is a technique that combines the power of large language models with external knowledge retrieval. 
+It was introduced by Facebook AI Research in 2020 and has since become a standard approach for building 
+knowledge-grounded AI applications.
+
+2. Core Components
+The RAG architecture consists of three main components:
+- Document Store: A database that holds your knowledge base documents
+- Retriever: A system that finds relevant documents based on a query
+- Generator: An LLM that produces answers using the retrieved context
+
+3. How RAG Works
+Step 1: Documents are chunked into smaller pieces and converted to embeddings
+Step 2: Embeddings are stored in a vector database for efficient similarity search
+Step 3: When a user asks a question, it's also converted to an embedding
+Step 4: The most similar document chunks are retrieved from the vector store
+Step 5: Retrieved chunks are passed to the LLM along with the question
+Step 6: The LLM generates an answer grounded in the retrieved information
+
+4. Benefits of RAG
+- Reduces hallucinations by grounding responses in actual documents
+- Allows LLMs to access up-to-date information beyond their training cutoff
+- Enables domain-specific knowledge without expensive fine-tuning
+- Provides transparency through source citations
+
+5. Popular Vector Databases
+- ChromaDB: Lightweight, embedded, great for prototyping
+- Pinecone: Managed service, scales well
+- Weaviate: Feature-rich, supports hybrid search
+- FAISS: High-performance, developed by Meta
+- pgvector: PostgreSQL extension for production deployments
+
+6. Chunking Strategies
+The way you split documents affects retrieval quality:
+- Fixed-size chunks: Simple but may break semantic units
+- Recursive splitting: Respects document structure
+- Semantic chunking: Groups by meaning, more complex
+
+7. Embedding Models
+Common choices for generating embeddings:
+- OpenAI text-embedding-3-small: High quality, API-based
+- nomic-embed-text: Open source, runs locally with Ollama
+- sentence-transformers: Various models, self-hosted
+
+8. Best Practices
+- Experiment with chunk sizes (500-1500 tokens typically work well)
+- Include metadata like source, page number for citations
+- Use hybrid search combining keyword and semantic search
+- Implement reranking for better relevance
+- Monitor and evaluate retrieval quality regularly

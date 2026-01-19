@@ -1,0 +1,60 @@
+/* Grid cards styling for MkDocs Material */
+.md-typeset .grid.cards > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  padding: 0;
+}
+
+.md-typeset .grid.cards > ul > li {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  list-style: none;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--md-accent-fg-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.md-typeset .grid.cards > ul > li > hr {
+  margin: 0.5rem 0;
+}
+
+/* Make mermaid diagrams larger */
+.mermaid {
+  text-align: center;
+}
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Wider content area */
+.md-grid {
+  max-width: 1440px;
+}
+
+.md-content {
+  max-width: 100%;
+}
+
+/* Reduce sidebar widths slightly to give more space to content */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary {
+    width: 11rem;
+  }
+  
+  .md-sidebar--secondary {
+    width: 11rem;
+  }
+}
+
+/* Make tables wider */
+.md-typeset table:not([class]) {
+  display: table;
+  width: 100%;
+}

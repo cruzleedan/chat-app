@@ -1,0 +1,40 @@
+{
+  "conversations": [
+    {
+      "id": "910b2f01-3dc7-46de-aead-8a9e9531c3cf",
+      "title": "who lived in aerandil?",
+      "messages": [
+        {
+          "role": "user",
+          "content": "who lived in aerandil?",
+          "timestamp": "2026-01-18T08:38:52.211122"
+        },
+        {
+          "role": "assistant",
+          "content": "According to the context, Lyra Moonwhisper lived in Aerindel, a floating city high above the clouds of planet Vexoria.",
+          "timestamp": "2026-01-18T08:38:52.211174"
+        }
+      ],
+      "created_at": "2026-01-18T08:38:47.186702",
+      "updated_at": "2026-01-18T08:38:52.211178"
+    },
+    {
+      "id": "31b7307e-0ab2-4daa-8f53-62c93ba69e9e",
+      "title": "what's the name of the floating city?",
+      "messages": [
+        {
+          "role": "user",
+          "content": "what's the name of the floating city?",
+          "timestamp": "2026-01-18T08:39:21.039566"
+        },
+        {
+          "role": "assistant",
+          "content": "The floating city is called Aerindel.",
+          "timestamp": "2026-01-18T08:39:21.039588"
+        }
+      ],
+      "created_at": "2026-01-18T08:39:20.018830",
+      "updated_at": "2026-01-18T08:39:21.039591"
+    }
+  ]
+}
