@@ -2,6 +2,20 @@
 # For homelab deployment on Ubuntu Server
 
 services:
+  # Ollama Service
+  ollama:
+    build:
+      context: ./ollama
+      dockerfile: Dockerfile
+    container_name: rag-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - rag-network
+
   # Backend API Service
   backend:
     build:
@@ -12,7 +26,8 @@ services:
     # ports:
     #   - "8000:8000"
     environment:
-      - OLLAMA_HOST=${OLLAMA_HOST:-http://host.docker.internal:11434}
+      # For containerized Ollama
+      - OLLAMA_HOST=${OLLAMA_HOST:-http://rag-ollama:11434}
       - LLM_MODEL=${LLM_MODEL:-llama3.2}
       - EMBEDDING_MODEL=${EMBEDDING_MODEL:-nomic-embed-text}
       - CHROMA_PERSIST_DIRECTORY=/app/data/chroma
@@ -22,9 +37,8 @@ services:
       - chroma_data:/app/data/chroma
       # Persist uploaded documents
       - uploads_data:/app/data/uploads
-    extra_hosts:
-      # Allow container to reach host's Ollama instance
-      - "host.docker.internal:host-gateway"
+    depends_on:
+      - ollama
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -59,6 +73,8 @@ services:
 
 # Named volumes for data persistence
 volumes:
+  ollama_data:
+    driver: local
   chroma_data:
     driver: local
   uploads_data:

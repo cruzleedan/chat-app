@@ -1,0 +1,9 @@
+# Alternative: Download models to volume on first run
+FROM ollama/ollama:latest
+
+# Copy initialization script
+COPY init-models.sh /init-models.sh
+RUN chmod +x /init-models.sh
+
+# Use custom entrypoint
+ENTRYPOINT ["/init-models.sh"]
