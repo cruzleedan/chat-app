@@ -13,6 +13,12 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "/health-check.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
     networks:
       - rag-network
 
@@ -38,7 +44,8 @@ services:
       # Persist uploaded documents
       - uploads_data:/app/data/uploads
     depends_on:
-      - ollama
+      ollama:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
