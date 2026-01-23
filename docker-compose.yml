@@ -2,25 +2,6 @@
 # For homelab deployment on Ubuntu Server
 
 services:
-  # Ollama Model Initialization
-  ollama-init:
-    image: ollama/ollama:latest
-    container_name: rag-ollama-init
-    depends_on:
-      - ollama
-    volumes:
-      - ollama_data:/root/.ollama
-    command: >
-      sh -c "
-        ollama pull llama3.2 &&
-        ollama pull nomic-embed-text &&
-        echo 'Models downloaded successfully'
-      "
-    networks:
-      - rag-network
-    environment:
-      - OLLAMA_HOST=http://rag-ollama:11434
-
   # Ollama Service
   ollama:
     image: ollama/ollama:latest
@@ -55,8 +36,7 @@ services:
       # Persist uploaded documents
       - uploads_data:/app/data/uploads
     depends_on:
-      ollama-init:
-        condition: service_completed_successfully
+      - ollama
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
