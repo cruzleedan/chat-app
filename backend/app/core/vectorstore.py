@@ -5,7 +5,7 @@ import chromadb
 from chromadb.config import Settings as ChromaSettings
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 from app.config import settings
 
