@@ -7,8 +7,7 @@ services:
     image: ollama/ollama:latest
     container_name: rag-ollama-init
     depends_on:
-      ollama:
-        condition: service_healthy
+      - ollama
     volumes:
       - ollama_data:/root/.ollama
     command: >
@@ -31,18 +30,6 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "sh",
-          "-c",
-          "wget --no-verbose --tries=1 --spider http://localhost:11434/api/version || exit 1",
-        ]
-      interval: 30s
-      timeout: 30s
-      retries: 10
-      start_period: 120s
     networks:
       - rag-network
 
