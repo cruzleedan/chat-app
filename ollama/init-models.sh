@@ -1,15 +1,12 @@
 #!/bin/bash
 # Initialize models on first run
 
-echo "Starting Ollama service..."
+echo "Starting Ollama initialization..."
 
 # Start ollama in background
+echo "Starting Ollama service..."
 ollama serve &
 OLLAMA_PID=$!
-
-# Wait for ollama to be ready
-echo "Waiting for Ollama to be ready..."
-sleep 10
 
 # Function to check if ollama is responding
 wait_for_ollama() {
@@ -48,9 +45,11 @@ if wait_for_ollama; then
     
     echo "Models ready!"
 else
-    echo "Failed to initialize Ollama, but continuing..."
+    echo "Failed to initialize Ollama, exiting..."
+    exit 1
 fi
 
-# Keep ollama running in foreground
-echo "Ollama initialization complete. Switching to foreground mode..."
-fg %1
+echo "Ollama initialization complete. Service is running."
+
+# Wait for the background process to keep container alive
+wait $OLLAMA_PID
