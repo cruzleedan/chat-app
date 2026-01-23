@@ -1,0 +1,17 @@
+# Docker Compose Override for Caddy Integration
+# This file automatically merges with docker-compose.yml
+
+services:
+  backend:
+    networks:
+      - rag-network
+      - caddy-network
+
+  frontend:
+    networks:
+      - rag-network
+      - caddy-network
+
+networks:
+  caddy-network:
+    external: true
