@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 
 export interface DocumentMetadata {
   id: string;
@@ -61,27 +61,27 @@ export const api = {
   async uploadDocument(file: File): Promise<{ message: string; document: DocumentMetadata }> {
     const formData = new FormData();
     formData.append('file', file);
-    
+
     const response = await fetch(`${API_BASE_URL}/documents/upload`, {
       method: 'POST',
       body: formData,
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.detail || 'Upload failed');
     }
-    
+
     return response.json();
   },
 
   async listDocuments(): Promise<DocumentListResponse> {
     const response = await fetch(`${API_BASE_URL}/documents`);
-    
+
     if (!response.ok) {
       throw new Error('Failed to fetch documents');
     }
-    
+
     return response.json();
   },
 
@@ -89,7 +89,7 @@ export const api = {
     const response = await fetch(`${API_BASE_URL}/documents/${documentId}`, {
       method: 'DELETE',
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.detail || 'Delete failed');
@@ -98,12 +98,12 @@ export const api = {
 
   async getDocumentContent(documentId: string): Promise<{ content: string; type: string }> {
     const response = await fetch(`${API_BASE_URL}/documents/${documentId}/content`);
-    
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.detail || 'Failed to get document content');
     }
-    
+
     return response.json();
   },
 
@@ -115,12 +115,12 @@ export const api = {
       },
       body: JSON.stringify({ question, conversation_id: conversationId, document_ids: documentIds }),
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.detail || 'Chat request failed');
     }
-    
+
     return response.json();
   },
 
@@ -171,21 +171,21 @@ export const api = {
 
   async listConversations(): Promise<{ conversations: ConversationInfo[]; total: number }> {
     const response = await fetch(`${API_BASE_URL}/chat/conversations`);
-    
+
     if (!response.ok) {
       throw new Error('Failed to fetch conversations');
     }
-    
+
     return response.json();
   },
 
   async getConversation(conversationId: string): Promise<ConversationDetail> {
     const response = await fetch(`${API_BASE_URL}/chat/conversations/${conversationId}`);
-    
+
     if (!response.ok) {
       throw new Error('Failed to fetch conversation');
     }
-    
+
     return response.json();
   },
 
@@ -193,7 +193,7 @@ export const api = {
     const response = await fetch(`${API_BASE_URL}/chat/conversations/${conversationId}`, {
       method: 'DELETE',
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.detail || 'Delete failed');
