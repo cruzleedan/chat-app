@@ -61,16 +61,8 @@ services:
 volumes:
   chroma_data:
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DATA_PATH:-./data}/chroma
   uploads_data:
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DATA_PATH:-./data}/uploads
 
 # Docker network
 networks:
