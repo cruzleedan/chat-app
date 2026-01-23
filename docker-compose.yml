@@ -4,7 +4,7 @@
 services:
   # Ollama Model Initialization
   ollama-init:
-    image: ollama/ollama:rocm
+    image: ollama/ollama:latest
     container_name: rag-ollama-init
     depends_on:
       ollama:
@@ -24,16 +24,13 @@ services:
 
   # Ollama Service
   ollama:
-    image: ollama/ollama:rocm
+    image: ollama/ollama:latest
     container_name: rag-ollama
     restart: unless-stopped
     ports:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
-    devices:
-      - /dev/kfd
-      - /dev/dri
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
       interval: 30s
