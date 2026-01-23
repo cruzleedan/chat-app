@@ -2,23 +2,44 @@
 # For homelab deployment on Ubuntu Server
 
 services:
+  # Ollama Model Initialization
+  ollama-init:
+    image: ollama/ollama:rocm
+    container_name: rag-ollama-init
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - ollama_data:/root/.ollama
+    command: >
+      sh -c "
+        ollama pull llama3.2 &&
+        ollama pull nomic-embed-text &&
+        echo 'Models downloaded successfully'
+      "
+    networks:
+      - rag-network
+    environment:
+      - OLLAMA_HOST=http://rag-ollama:11434
+
   # Ollama Service
   ollama:
-    build:
-      context: ./ollama
-      dockerfile: Dockerfile
+    image: ollama/ollama:rocm
     container_name: rag-ollama
     restart: unless-stopped
     ports:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
+    devices:
+      - /dev/kfd
+      - /dev/dri
     healthcheck:
-      test: ["CMD", "/health-check.sh"]
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 60s
+      start_period: 30s
     networks:
       - rag-network
 
@@ -44,8 +65,8 @@ services:
       # Persist uploaded documents
       - uploads_data:/app/data/uploads
     depends_on:
-      ollama:
-        condition: service_healthy
+      ollama-init:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
