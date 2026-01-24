@@ -24,7 +24,7 @@ function App() {
   const [conversationRefresh, setConversationRefresh] = useState(0);
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('darkMode') === 'true' || 
+      return localStorage.getItem('darkMode') === 'true' ||
         window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
     return false;
@@ -39,6 +39,9 @@ function App() {
   });
   const streamingContentRef = useRef('');
   const dragCounterRef = useRef(0);
+
+  // Get documentation URL from environment variable
+  const docsUrl = import.meta.env.VITE_DOCS_URL || 'http://localhost:8080';
 
   // Apply dark mode class to document
   useEffect(() => {
@@ -197,7 +200,7 @@ function App() {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    
+
     if (useStreaming) {
       await handleStreamingMessage(content, additionalDocIds);
     } else {
@@ -208,7 +211,7 @@ function App() {
   const handleStreamingMessage = async (content: string, additionalDocIds?: string[]) => {
     setIsStreaming(true);
     streamingContentRef.current = '';
-    
+
     // Add placeholder for streaming message
     const assistantMessageId = (Date.now() + 1).toString();
     const assistantMessage: Message = {
@@ -225,13 +228,13 @@ function App() {
       const allDocIds = new Set(selectedDocIds);
       additionalDocIds?.forEach(id => allDocIds.add(id));
       const documentIds = allDocIds.size > 0 ? Array.from(allDocIds) : undefined;
-      
+
       for await (const event of api.chatStream(content, conversationId, documentIds)) {
         if (event.type === 'token' && event.content) {
           streamingContentRef.current += event.content;
-          setMessages((prev) => 
-            prev.map((m) => 
-              m.id === assistantMessageId 
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantMessageId
                 ? { ...m, content: streamingContentRef.current }
                 : m
             )
@@ -247,31 +250,31 @@ function App() {
       }
 
       // Final update with sources
-      setMessages((prev) => 
-        prev.map((m) => 
-          m.id === assistantMessageId 
-            ? { 
-                ...m, 
-                content: streamingContentRef.current,
-                sources: sources.map((s) => ({
-                  content: s.content,
-                  filename: s.filename,
-                  page: s.page,
-                })),
-              }
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantMessageId
+            ? {
+              ...m,
+              content: streamingContentRef.current,
+              sources: sources.map((s) => ({
+                content: s.content,
+                filename: s.filename,
+                page: s.page,
+              })),
+            }
             : m
         )
       );
       // Refresh conversation list to show new/updated conversation
       setConversationRefresh(prev => prev + 1);
     } catch (error) {
-      setMessages((prev) => 
-        prev.map((m) => 
-          m.id === assistantMessageId 
-            ? { 
-                ...m, 
-                content: error instanceof Error ? error.message : 'An error occurred. Please try again.',
-              }
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantMessageId
+            ? {
+              ...m,
+              content: error instanceof Error ? error.message : 'An error occurred. Please try again.',
+            }
             : m
         )
       );
@@ -289,11 +292,11 @@ function App() {
       additionalDocIds?.forEach(id => allDocIds.add(id));
       const documentIds = allDocIds.size > 0 ? Array.from(allDocIds) : undefined;
       const response = await api.chat(content, conversationId, documentIds);
-      
+
       if (response.conversation_id) {
         setConversationId(response.conversation_id);
       }
-      
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -327,9 +330,8 @@ function App() {
       {/* Left Sidebar - Conversations */}
       <div
         data-tour="conversations"
-        className={`${
-          leftSidebarOpen ? 'w-72' : 'w-0'
-        } transition-all duration-300 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden`}
+        className={`${leftSidebarOpen ? 'w-72' : 'w-0'
+          } transition-all duration-300 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden`}
       >
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <h1 className="text-xl font-bold text-gray-800 dark:text-white">📚 RAG Q&A</h1>
@@ -377,7 +379,7 @@ function App() {
       </div>
 
       {/* Main Chat Area */}
-      <div 
+      <div
         className="flex-1 flex flex-col min-w-0 relative"
         onDragEnter={handleChatDragEnter}
         onDragLeave={handleChatDragLeave}
@@ -424,7 +426,7 @@ function App() {
             <p className="text-xs text-gray-500 dark:text-gray-400">
               {selectedDocIds.size > 0
                 ? `${selectedDocIds.size} of ${documents.length} document${documents.length !== 1 ? 's' : ''} selected`
-                : documents.length > 0 
+                : documents.length > 0
                   ? 'No documents selected for context'
                   : 'No documents uploaded'}
               {conversationId && ' • Conversation active'}
@@ -451,7 +453,7 @@ function App() {
             title="Documentation"
           >
             <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
           </button>
@@ -461,7 +463,7 @@ function App() {
             title="Toggle documents"
           >
             <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </button>
@@ -472,10 +474,10 @@ function App() {
 
         {/* Input */}
         <div data-tour="chat-input">
-          <ChatInput 
+          <ChatInput
             onSend={handleSendMessage}
             onImagePaste={handleImagePaste}
-            disabled={isLoading || isStreaming || selectedDocIds.size === 0} 
+            disabled={isLoading || isStreaming || selectedDocIds.size === 0}
           />
         </div>
       </div>
@@ -483,21 +485,20 @@ function App() {
       {/* Right Sidebar - Documents */}
       <div
         data-tour="documents"
-        className={`${
-          rightSidebarOpen ? 'w-80' : 'w-0'
-        } transition-all duration-300 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden`}
+        className={`${rightSidebarOpen ? 'w-80' : 'w-0'
+          } transition-all duration-300 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden`}
       >
         <div data-tour="doc-selection" className="h-full">
-        <DocumentPanel
-          documents={documents}
-          selectedDocIds={selectedDocIds}
-          isDeleting={isDeleting}
-          onToggleDocument={handleToggleDocument}
-          onSelectAll={handleSelectAll}
-          onDeselectAll={handleDeselectAll}
-          onDelete={handleDelete}
-          onUploadSuccess={handleUploadSuccess}
-        />
+          <DocumentPanel
+            documents={documents}
+            selectedDocIds={selectedDocIds}
+            isDeleting={isDeleting}
+            onToggleDocument={handleToggleDocument}
+            onSelectAll={handleSelectAll}
+            onDeselectAll={handleDeselectAll}
+            onDelete={handleDelete}
+            onUploadSuccess={handleUploadSuccess}
+          />
         </div>
       </div>
 
@@ -526,14 +527,14 @@ function App() {
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
               <div className="flex items-center gap-3">
                 <svg className="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                     d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
                 <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Documentation</h2>
               </div>
               <div className="flex items-center gap-2">
                 <a
-                  href="http://localhost:8080"
+                  href={docsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 px-3 py-1.5 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
@@ -558,7 +559,7 @@ function App() {
             {/* Iframe Content */}
             <div className="flex-1 bg-gray-100 dark:bg-gray-900">
               <iframe
-                src="http://localhost:8080"
+                src={docsUrl}
                 className="w-full h-full border-0"
                 title="RAG Q&A Documentation"
               />

@@ -12,6 +12,11 @@ services:
       - rag-network
       - caddy-network
 
+  docs:
+    networks:
+      - rag-network
+      - caddy-network
+
 networks:
   caddy-network:
     external: true

@@ -19,6 +19,10 @@ COPY . .
 ARG VITE_API_BASE_URL=http://localhost:8000/api
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
+# Build argument for Documentation URL (can be overridden at build time)
+ARG VITE_DOCS_URL=http://localhost:8080
+ENV VITE_DOCS_URL=$VITE_DOCS_URL
+
 # Build the application
 RUN npm run build
 
