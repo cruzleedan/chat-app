@@ -40,8 +40,8 @@ function App() {
   const streamingContentRef = useRef('');
   const dragCounterRef = useRef(0);
 
-  // Get documentation URL from environment variable
-  const docsUrl = import.meta.env.VITE_DOCS_URL || 'http://localhost:8080';
+  // Get documentation URL dynamically based on current domain
+  const docsUrl = `${window.location.origin}/docs`;
 
   // Apply dark mode class to document
   useEffect(() => {

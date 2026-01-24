@@ -1,4 +1,5 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+// Generate API URL dynamically based on current domain
+const API_BASE_URL = `${window.location.origin}/api`;
 
 export interface DocumentMetadata {
   id: string;

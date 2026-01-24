@@ -15,13 +15,8 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build argument for API URL (can be overridden at build time)
-ARG VITE_API_BASE_URL=http://localhost:8000/api
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
-
-# Build argument for Documentation URL (can be overridden at build time)
-ARG VITE_DOCS_URL=http://localhost:8080
-ENV VITE_DOCS_URL=$VITE_DOCS_URL
+# API and Docs URLs are now dynamically generated based on current domain
+# No need for environment variables
 
 # Build the application
 RUN npm run build
