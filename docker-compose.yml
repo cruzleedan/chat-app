@@ -77,8 +77,6 @@ services:
     build:
       context: ./docs
       dockerfile: Dockerfile
-      args:
-        VITE_DOCS_URL: ${VITE_DOCS_URL:-http://localhost:8080/}
     container_name: rag-docs
     restart: unless-stopped
     # ports:
