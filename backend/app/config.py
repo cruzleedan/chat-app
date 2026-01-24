@@ -11,6 +11,12 @@ class Settings(BaseSettings):
     ollama_host: str = "http://localhost:11434"
     llm_model: str = "llama3.2"
     embedding_model: str = "nomic-embed-text"
+    
+    # LLM Response Configuration
+    llm_temperature: float = 0.7
+    llm_num_predict: int = 2048  # Max tokens to generate (controls response length)
+    llm_top_k: int = 40
+    llm_top_p: float = 0.9
 
     # RAG Configuration
     chunk_size: int = 1000

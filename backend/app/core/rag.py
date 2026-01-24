@@ -18,7 +18,8 @@ RAG_PROMPT = ChatPromptTemplate.from_messages([
     ("system", """You are a helpful assistant that answers questions based on the provided context.
 Use only the information from the context to answer the question.
 If the context doesn't contain enough information to answer the question, say so clearly.
-Be concise but thorough in your answers.
+Provide detailed, comprehensive answers with explanations, examples, and relevant background information when available.
+Expand on key concepts and provide thorough explanations to help the user understand the topic fully.
 
 Context:
 {context}
@@ -32,7 +33,8 @@ RAG_PROMPT_WITH_HISTORY = ChatPromptTemplate.from_messages([
     ("system", """You are a helpful assistant that answers questions based on the provided context.
 Use only the information from the context to answer the question.
 If the context doesn't contain enough information to answer the question, say so clearly.
-Be concise but thorough in your answers.
+Provide detailed, comprehensive answers with explanations, examples, and relevant background information when available.
+Expand on key concepts and provide thorough explanations to help the user understand the topic fully.
 Consider the conversation history when interpreting the user's question.
 
 Context:
@@ -59,7 +61,10 @@ class RAGPipeline:
             self._llm = ChatOllama(
                 model=settings.llm_model,
                 base_url=settings.ollama_host,
-                temperature=0,
+                temperature=settings.llm_temperature,
+                num_predict=settings.llm_num_predict,
+                top_k=settings.llm_top_k,
+                top_p=settings.llm_top_p,
             )
         return self._llm
 
@@ -70,7 +75,10 @@ class RAGPipeline:
             self._streaming_llm = ChatOllama(
                 model=settings.llm_model,
                 base_url=settings.ollama_host,
-                temperature=0,
+                temperature=settings.llm_temperature,
+                num_predict=settings.llm_num_predict,
+                top_k=settings.llm_top_k,
+                top_p=settings.llm_top_p,
             )
         return self._streaming_llm
 
