@@ -82,11 +82,11 @@ services:
     # ports:
     #   - "8080:80"
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
+      test: ["CMD", "curl", "-f", "http://localhost/"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 5s
+      start_period: 30s
     networks:
       - rag-network
 
