@@ -26,8 +26,8 @@ class VectorStoreManager:
         """Get or create embeddings instance."""
         if self._embeddings is None:
             self._embeddings = OllamaEmbeddings(
-                model=settings.ollama_embedding_model,
-                base_url=settings.ollama_base_url,
+                model=settings.embedding_model,
+                base_url=settings.ollama_host,
             )
         return self._embeddings
 

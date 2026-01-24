@@ -8,9 +8,9 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
     # Ollama Configuration
-    ollama_base_url: str = "http://localhost:11434"
-    ollama_model: str = "llama3.2"
-    ollama_embedding_model: str = "nomic-embed-text"
+    ollama_host: str = "http://localhost:11434"
+    llm_model: str = "llama3.2"
+    embedding_model: str = "nomic-embed-text"
 
     # RAG Configuration
     chunk_size: int = 1000

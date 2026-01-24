@@ -57,8 +57,8 @@ class RAGPipeline:
         """Get or create the LLM instance."""
         if self._llm is None:
             self._llm = ChatOllama(
-                model=settings.ollama_model,
-                base_url=settings.ollama_base_url,
+                model=settings.llm_model,
+                base_url=settings.ollama_host,
                 temperature=0,
             )
         return self._llm
@@ -68,8 +68,8 @@ class RAGPipeline:
         """Get or create the streaming LLM instance."""
         if self._streaming_llm is None:
             self._streaming_llm = ChatOllama(
-                model=settings.ollama_model,
-                base_url=settings.ollama_base_url,
+                model=settings.llm_model,
+                base_url=settings.ollama_host,
                 temperature=0,
             )
         return self._streaming_llm

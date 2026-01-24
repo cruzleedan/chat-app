@@ -197,3 +197,4 @@ data/conversations.json
 test-results/
 playwright-report/
 test-results.xml
+.DS_Store
