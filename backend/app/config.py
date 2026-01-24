@@ -13,10 +13,10 @@ class Settings(BaseSettings):
     embedding_model: str = "nomic-embed-text"
     
     # LLM Response Configuration
-    llm_temperature: float = 0.7
+    llm_temperature: float = 1.1  # Higher temperature for creative, sassy responses
     llm_num_predict: int = 2048  # Max tokens to generate (controls response length)
-    llm_top_k: int = 40
-    llm_top_p: float = 0.9
+    llm_top_k: int = 60  # Increased for more variety
+    llm_top_p: float = 0.95  # Higher for more creative word choices
 
     # RAG Configuration
     chunk_size: int = 1000
@@ -40,10 +40,6 @@ class Settings(BaseSettings):
         path = Path(__file__).parent.parent / self.chroma_dir
         path.mkdir(parents=True, exist_ok=True)
         return path
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
 
 
 # Global settings instance
