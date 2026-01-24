@@ -1,7 +1,7 @@
 site_name: RAG Document Q&A
 site_description: A full-stack Retrieval-Augmented Generation application for document Q&A
 site_author: Your Name
-site_url: https://your-domain.com/rag-docs
+site_url: ${VITE_DOCS_URL}
 
 docs_dir: content
 

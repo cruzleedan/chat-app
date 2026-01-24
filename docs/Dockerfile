@@ -1,8 +1,9 @@
 # Documentation service using MkDocs with Material theme
 FROM python:3.11-alpine
 
-# Install dependencies
-RUN pip install mkdocs-material mkdocs-mermaid2-plugin
+# Install dependencies including gettext for envsubst
+RUN pip install mkdocs-material mkdocs-mermaid2-plugin && \
+    apk add --no-cache gettext
 
 # Set working directory
 WORKDIR /app
@@ -10,8 +11,14 @@ WORKDIR /app
 # Copy documentation files
 COPY . .
 
-# Build the documentation
-RUN mkdocs build
+# Build argument for site URL
+ARG VITE_DOCS_URL=http://localhost:8080/
+ENV VITE_DOCS_URL=$VITE_DOCS_URL
+
+# Substitute environment variables and build documentation
+RUN envsubst < mkdocs.yml > mkdocs.yml.tmp && \
+    mv mkdocs.yml.tmp mkdocs.yml && \
+    mkdocs build
 
 # Use nginx to serve the built docs
 FROM nginx:alpine
