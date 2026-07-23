@@ -14,7 +14,6 @@ services:
 
   docs:
     networks:
-      - rag-network
       - caddy-network
 
 networks:
