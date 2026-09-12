@@ -49,14 +49,14 @@ chat-app/
 docker compose up -d
 
 # Logs
-docker logs -f chat-app-backend
-docker logs -f chat-app-frontend
+docker logs -f rag-backend
+docker logs -f rag-frontend
 
 # Rebuild after code changes
 docker compose up -d --build
 
-# Re-index documents (if data/ is corrupted)
-docker compose restart chat-app-backend
+# Restart the backend (Compose service name; does not re-index documents)
+docker compose restart backend
 ```
 
 ---
