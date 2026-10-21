@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { api, DocumentMetadata, SourceDocument } from './services/api';
+import { api, DocumentMetadata, SourceDocument, Tone, ToneConfig } from './services/api';
 import { Message } from './types';
 import { ChatMessages } from './components/ChatMessages';
 import { ChatInput } from './components/ChatInput';
@@ -7,6 +7,8 @@ import { ConversationList } from './components/ConversationList';
 import { DocumentPanel } from './components/DocumentPanel';
 import { WelcomeModal } from './components/WelcomeModal';
 import { FeatureTour } from './components/FeatureTour';
+import { ToneControl } from './components/ToneControl';
+import { loadTone, saveTone } from './services/tone';
 
 function App() {
   const [documents, setDocuments] = useState<DocumentMetadata[]>([]);
@@ -17,8 +19,9 @@ function App() {
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDraggingOnChat, setIsDraggingOnChat] = useState(false);
-  const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
-  const [rightSidebarOpen, setRightSidebarOpen] = useState(true);
+  // Both sidebars start closed on a phone, where they would cover the chat (and the tone control).
+  const [leftSidebarOpen, setLeftSidebarOpen] = useState(() => window.innerWidth >= 1024);
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(() => window.innerWidth >= 1024);
   const [conversationId, setConversationId] = useState<string | undefined>(undefined);
   const [useStreaming, setUseStreaming] = useState(true);
   const [conversationRefresh, setConversationRefresh] = useState(0);
@@ -37,11 +40,30 @@ function App() {
   const [isFirstVisit] = useState(() => {
     return localStorage.getItem('rag-tour-completed') !== 'true';
   });
+  const [toneConfig, setToneConfig] = useState<ToneConfig | null>(null);
+  const [tone, setTone] = useState<Tone>({
+    preset: 'neutral', formality: 'balanced', length: 'standard', humor: 'none', format: 'prose', note: '',
+  });
   const streamingContentRef = useRef('');
   const dragCounterRef = useRef(0);
 
   // Get documentation URL dynamically based on current domain
   const docsUrl = `${window.location.origin}/docs`;
+
+  // Tone options come from the server; the saved tone is used once they arrive.
+  useEffect(() => {
+    api.getToneConfig().then((config) => {
+      setToneConfig(config);
+      setTone(loadTone(config));
+    }).catch(() => {
+      // Without the options the control stays disabled and the server default applies.
+    });
+  }, []);
+
+  const handleToneChange = (next: Tone) => {
+    setTone(next);
+    saveTone(next);
+  };
 
   // Apply dark mode class to document
   useEffect(() => {
@@ -229,7 +251,7 @@ function App() {
       additionalDocIds?.forEach(id => allDocIds.add(id));
       const documentIds = allDocIds.size > 0 ? Array.from(allDocIds) : undefined;
 
-      for await (const event of api.chatStream(content, conversationId, documentIds)) {
+      for await (const event of api.chatStream(content, conversationId, documentIds, toneConfig ? tone : undefined)) {
         if (event.type === 'token' && event.content) {
           streamingContentRef.current += event.content;
           setMessages((prev) =>
@@ -291,7 +313,7 @@ function App() {
       const allDocIds = new Set(selectedDocIds);
       additionalDocIds?.forEach(id => allDocIds.add(id));
       const documentIds = allDocIds.size > 0 ? Array.from(allDocIds) : undefined;
-      const response = await api.chat(content, conversationId, documentIds);
+      const response = await api.chat(content, conversationId, documentIds, toneConfig ? tone : undefined);
 
       if (response.conversation_id) {
         setConversationId(response.conversation_id);
@@ -437,6 +459,7 @@ function App() {
               💬 Following up
             </span>
           )}
+          <ToneControl config={toneConfig} tone={tone} onChange={handleToneChange} />
           <button
             data-tour="help"
             onClick={() => setShowWelcomeModal(true)}
