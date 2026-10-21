@@ -13,10 +13,13 @@ class Settings(BaseSettings):
     embedding_model: str = "nomic-embed-text"
     
     # LLM Response Configuration
-    llm_temperature: float = 1.3  # Very high temperature for maximum sass and creativity
+    # Sampling is low by default so answers stay on the documents (WORK-0004).
+    # A livelier tone raises the temperature, but never above llm_temperature_max.
+    llm_temperature: float = 0.3
+    llm_temperature_max: float = 0.8
     llm_num_predict: int = 2048  # Max tokens to generate (controls response length)
-    llm_top_k: int = 80  # Even more variety
-    llm_top_p: float = 0.98  # Maximum creative word choices
+    llm_top_k: int = 40
+    llm_top_p: float = 0.9
 
     # RAG Configuration
     chunk_size: int = 1000

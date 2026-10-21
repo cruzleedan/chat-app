@@ -4,6 +4,8 @@ from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, Field
 
+from app.core.tone import Tone
+
 
 # ============== Document Schemas ==============
 
@@ -47,6 +49,7 @@ class ChatRequest(BaseModel):
     question: str = Field(..., min_length=1, description="The question to ask")
     conversation_id: Optional[str] = Field(None, description="Conversation ID for follow-up questions")
     document_ids: Optional[List[str]] = Field(None, description="List of document IDs to search in (if None, search all)")
+    tone: Optional[Tone] = Field(None, description="How the answer should sound (default: neutral)")
 
 
 class SourceDocument(BaseModel):

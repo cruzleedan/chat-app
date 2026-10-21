@@ -24,6 +24,34 @@ export interface ChatResponse {
   conversation_id?: string;
 }
 
+export type TonePreset = 'neutral' | 'concise' | 'friendly' | 'playful' | 'sassy' | 'custom';
+
+export interface Tone {
+  preset: TonePreset;
+  formality: 'casual' | 'balanced' | 'formal';
+  length: 'brief' | 'standard' | 'detailed';
+  humor: 'none' | 'light' | 'lots';
+  format: 'prose' | 'bullets';
+  note: string;
+}
+
+export interface TonePresetInfo {
+  id: Exclude<TonePreset, 'custom'>;
+  label: string;
+  description: string;
+  formality: Tone['formality'];
+  length: Tone['length'];
+  humor: Tone['humor'];
+  format: Tone['format'];
+}
+
+export interface ToneConfig {
+  default: Tone;
+  presets: TonePresetInfo[];
+  options: Record<'formality' | 'length' | 'humor' | 'format', string[]>;
+  note_max_length: number;
+}
+
 export interface DocumentListResponse {
   documents: DocumentMetadata[];
   total: number;
@@ -56,6 +84,15 @@ export interface ConversationDetail {
   id: string;
   title: string;
   messages: ConversationMessage[];
+}
+
+// FastAPI sends a string for most errors and a list of problems for a 422.
+function formatDetail(detail: unknown): string {
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) {
+    return detail.map((d) => (d && typeof d === 'object' && 'msg' in d ? String(d.msg) : String(d))).join('; ');
+  }
+  return '';
 }
 
 export const api = {
@@ -108,18 +145,33 @@ export const api = {
     return response.json();
   },
 
-  async chat(question: string, conversationId?: string, documentIds?: string[]): Promise<ChatResponse> {
+  async getToneConfig(): Promise<ToneConfig> {
+    const response = await fetch(`${API_BASE_URL}/chat/tone`);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch tone options');
+    }
+
+    return response.json();
+  },
+
+  async chat(
+    question: string,
+    conversationId?: string,
+    documentIds?: string[],
+    tone?: Tone
+  ): Promise<ChatResponse> {
     const response = await fetch(`${API_BASE_URL}/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ question, conversation_id: conversationId, document_ids: documentIds }),
+      body: JSON.stringify({ question, conversation_id: conversationId, document_ids: documentIds, tone }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || 'Chat request failed');
+      throw new Error(formatDetail(error.detail) || 'Chat request failed');
     }
 
     return response.json();
@@ -128,19 +180,20 @@ export const api = {
   async *chatStream(
     question: string,
     conversationId?: string,
-    documentIds?: string[]
+    documentIds?: string[],
+    tone?: Tone
   ): AsyncGenerator<StreamEvent, void, unknown> {
     const response = await fetch(`${API_BASE_URL}/chat/stream`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ question, conversation_id: conversationId, document_ids: documentIds }),
+      body: JSON.stringify({ question, conversation_id: conversationId, document_ids: documentIds, tone }),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || 'Stream request failed');
+      throw new Error(formatDetail(error.detail) || 'Stream request failed');
     }
 
     const reader = response.body?.getReader();

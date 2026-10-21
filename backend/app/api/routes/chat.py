@@ -8,6 +8,7 @@ from app.core.rag import rag_pipeline
 from app.core.vectorstore import vectorstore_manager
 from app.core.conversation import conversation_manager
 from app.core.logging import logger
+from app.core.tone import presets_payload
 from app.models.schemas import (
     ChatRequest, 
     ChatResponse, 
@@ -16,6 +17,12 @@ from app.models.schemas import (
 )
 
 router = APIRouter(prefix="/chat", tags=["chat"])
+
+
+@router.get("/tone")
+async def tone_options():
+    """The tone presets and options, so the UI does not hard-code them."""
+    return presets_payload()
 
 
 @router.post("", response_model=ChatResponse)
@@ -42,7 +49,8 @@ async def chat(request: ChatRequest):
         response, conversation_id = rag_pipeline.query(
             request.question, 
             request.conversation_id,
-            request.document_ids
+            request.document_ids,
+            request.tone,
         )
         logger.info(f"✅ Generated response with {len(response.sources)} sources")
         return response
@@ -77,7 +85,8 @@ async def chat_stream(request: ChatRequest):
             for token, sources, conv_id in rag_pipeline.query_stream(
                 request.question,
                 request.conversation_id,
-                request.document_ids
+                request.document_ids,
+                request.tone,
             ):
                 if sources is not None:
                     # Final message with sources
