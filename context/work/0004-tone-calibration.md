@@ -1,7 +1,7 @@
 ---
 id: 0004
 title: "Tone calibration: let the user tune how the assistant answers"
-status: building
+status: shipped
 kind: feature
 opened: 2026-10-21
 decided: 2026-10-21
@@ -15,7 +15,7 @@ superseded-by: ~
 | | |
 |---|---|
 | **Opened** | 2026-10-21 |
-| **Status** | building |
+| **Status** | shipped |
 | **Kind** | feature |
 | **Supersedes** | — |
 | **Superseded by** | — |
@@ -193,7 +193,7 @@ edit the grounding rules.
       under `neutral`, `concise` and `sassy`; each answer stays on the
       document (no invented pages or facts). Results recorded in the Log.
 - [x] Backend tests and the frontend build pass
-- [ ] Manual pass on the live site; deployed per `AGENTS.md`; previous image
+- [x] Manual pass on the live site; deployed per `AGENTS.md`; previous image
       kept for rollback
 
 ## Log
@@ -229,6 +229,24 @@ edit the grounding rules.
   note counter, Escape, focus return, persistence, reset, outside click and
   the tone in the request. `npm run lint` still reports one existing error
   in `vite-env.d.ts` (not part of this change).
+- 2026-10-21 shipped — PR #1 merged (08ec529) and deployed by hand with
+  `docker compose up -d --build` (previous images tagged
+  `chat-app-{backend,frontend,docs}:rollback-2026-10-21`). Live checks:
+  `GET /api/chat/tone` lists the five presets with `neutral` default; a
+  `concise` question returned a plain, cited answer; the Tone popover opens
+  on `chat-app.cruzleedan.work` at 1280 and 390 px with no page errors or
+  horizontal scroll; the docs page has the Tone section. The test
+  conversation created for the check was deleted by its id; the two
+  existing conversations are untouched.
+- 2026-10-21 deploy gotcha: `conversations.json` is written to `/app/data`,
+  which is not a volume (only `data/chroma` and `data/uploads` are), so
+  recreating the backend container loses chat history. It was copied out
+  before the deploy and back in afterwards (1801 bytes, 2 conversations
+  checked after). Follow-up: mount `/app/data/conversations.json` (or the
+  directory) as a volume; until then back it up before every deploy.
+- Open follow-ups: the `rag-frontend` container showed `unhealthy` for
+  weeks before this deploy (health-starting after it); `concise` and
+  custom notes are followed loosely by llama3.2.
 
 ---
 
