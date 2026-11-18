@@ -21,3 +21,5 @@ Use `(cross-project)` for the project field when the issue isn't specific to
 one project's files.
 
 ## Entries
+
+- 2026-11-18: Shared context-template/scripts/verify-context.sh rejects the existing tracked context/ideas directory, while current workspace conventions retain ideas. This is baseline framework friction, not an application failure. Do not remove proposals to make the checker green; align the maintained validator separately. Scoped records were independently validated for the recovery work.
